@@ -17,6 +17,7 @@
  */
 import { createHash } from "node:crypto";
 import path from "node:path";
+import { assertScrubbed, scrubPublicBackends } from "./scrub-backends";
 
 const ROOT = path.resolve(import.meta.dir, "..");
 const ENTRY = path.join(ROOT, "src", "entry.ts");
@@ -40,7 +41,9 @@ if (!result.success) {
   for (const log of result.logs) console.error(log);
   process.exit(1);
 }
-const js = await result.outputs[0].text();
+// Point Excalidraw's hosted-service endpoints at a dead sink (see scrub-backends.ts).
+const js = scrubPublicBackends(await result.outputs[0].text());
+assertScrubbed(js);
 
 // Escape inline-script terminators (see header note).
 const inlineJs = js.replaceAll("</scri", "<\\/scri");
@@ -84,6 +87,7 @@ const sha256 = createHash("sha256").update(html).digest("hex");
 const srcSha256 = createHash("sha256")
   .update(await Bun.file(ENTRY).text())
   .update(await Bun.file(import.meta.path).text())
+  .update(await Bun.file(path.join(import.meta.dir, "scrub-backends.ts")).text())
   .digest("hex");
 const info = {
   name: "gstack-diagram-render",

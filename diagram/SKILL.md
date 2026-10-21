@@ -2,7 +2,7 @@
 name: diagram
 preamble-tier: 1
 version: 1.0.0
-description: "Turn an English description (or mermaid source) into a diagram triplet: the source, an editable .excalidraw file you can open on excalidraw.com, and rendered SVG + PNG. (gstack)"
+description: Turn an English description (or mermaid source) into a diagram. (gstack)
 allowed-tools:
   - Bash
   - Read
@@ -149,12 +149,31 @@ Skills that run plan reviews (`/plan-*-review`, `/codex review`) include the EXI
 
 # /diagram — English in, editable diagram out
 
+## Step 0 — Route to Drawio (Sanmarcsoft fork)
+
+Check for a host Drawio skill before anything else:
+
+```bash
+for d in ~/.claude/skills/Drawio ~/.claude/skills/drawio; do
+  [ -f "$d/SKILL.md" ] && echo "DRAWIO: $d" && break
+done
+```
+
+If it prints `DRAWIO:`, invoke the `Drawio` skill with the user's request
+(diagram type, components, output format) and stop here: that skill owns
+authoring, rendering, export and signing for this host, on infrastructure the
+operator controls. Do not also produce the excalidraw triplet below.
+
+Only when no Drawio skill is installed, continue with the offline triplet.
+Either way, never upload a diagram, its source or its scene to excalidraw.com,
+diagrams.net or any other public share service.
+
 Every run emits a **triplet**, never a dead pixel dump:
 
 | Artifact | What it's for |
 |---|---|
 | `<slug>.mmd` | the mermaid source — the LLM-friendly interchange format |
-| `<slug>.excalidraw` | editable scene — open it at excalidraw.com, move a box, keep working |
+| `<slug>.excalidraw` | editable scene — open it in a local or self-hosted Excalidraw editor, move a box, keep working |
 | `<slug>.svg` + `<slug>.png` | crisp vector for docs + raster for chat/issues/READMEs |
 
 Rendering is fully offline: the diagram-render bundle
@@ -173,7 +192,7 @@ Write mermaid for the user's request. Rules:
   `graph LR` for pipelines/flows, `graph TD` for hierarchies.
 - State, class, gantt, and the other mermaid types render to SVG/PNG fine and
   still get an `.excalidraw`, but the converter exports them as ONE image
-  element: it opens at excalidraw.com and can be moved and annotated, not
+  element: it opens in an Excalidraw editor and can be moved and annotated, not
   edited box by box. Tell the user that when you deliver one.
 - Keep node labels short; put detail in edge labels. 5-15 nodes is the
   readable range. If the user's ask needs more, split into multiple diagrams
@@ -260,8 +279,9 @@ substitute a CDN or another renderer.
 
 1. Read the PNG with the Read tool so the user sees the diagram inline.
 2. List the triplet paths.
-3. One-line editability note: "The `.excalidraw` file opens at excalidraw.com
-   (File → Open) — edit it there and I can re-render from the edited scene."
+3. One-line editability note: "The `.excalidraw` file opens in a local or
+   self-hosted Excalidraw editor (File → Open); do not upload it to the public
+   excalidraw.com. Edit it there and I can re-render from the edited scene."
 4. If the user wants changes, edit the `.mmd` source and re-run Step 3 — the
    source is the single source of truth.
 

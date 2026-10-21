@@ -44,8 +44,16 @@ describe("diagram-render bundle drift", () => {
     const srcSha = createHash("sha256")
       .update(await Bun.file(path.join(ROOT, "src", "entry.ts")).text())
       .update(await Bun.file(path.join(ROOT, "scripts", "build.ts")).text())
+      .update(await Bun.file(path.join(ROOT, "scripts", "scrub-backends.ts")).text())
       .digest("hex");
     expect(srcSha).toBe(info.srcSha256);
+  });
+
+  test("bundle carries no public Excalidraw backend (share, collab, AI, Firebase)", async () => {
+    const { BLOCKED_HOST_PATTERN } = await import("../lib/diagram-render/scripts/scrub-backends");
+    const html = await Bun.file(DIST_HTML).text();
+    expect(html.match(BLOCKED_HOST_PATTERN)).toBeNull();
+    expect(html).toContain("VITE_APP_FIREBASE_CONFIG:'{}'");
   });
 
   test("bundle font stack matches print-css (text-measurement drift guard)", async () => {

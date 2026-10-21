@@ -26,7 +26,7 @@ Conventions:
 - [/design-shotgun](design-shotgun/SKILL.md): Design shotgun: generate multiple AI design variants, open a comparison board, collect structured feedback, and iterate.
 - [/deslop-shared-libs](deslop-shared-libs/SKILL.md): Find worthwhile shared-code extractions in recent work.
 - [/devex-review](devex-review/SKILL.md): Live developer experience audit.
-- [/diagram](diagram/SKILL.md): Turn an English description (or mermaid source) into a diagram triplet: the source, an editable .excalidraw file you can open on excalidraw.com, and rendered SVG + PNG.
+- [/diagram](diagram/SKILL.md): Turn an English description (or mermaid source) into a diagram.
 - [/document-generate](document-generate/SKILL.md): Generate missing documentation from scratch for a feature, module, or entire project.
 - [/document-release](document-release/SKILL.md): Release documentation audit.
 - [/eval-plan](eval-plan/SKILL.md): Preregister a paid eval (bars, arms, decoys, stop rules), dry-run it at zero cost, then run a three-item priced pilot whose spend table gates approval.
